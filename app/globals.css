@@ -1,5 +1,9 @@
-@import "tailwindcss";
+/* ✅ Tailwind 기본 설정 (반드시 최상단에 있어야 함) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* ✅ 전역 색상 변수 */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,6 +16,7 @@
   }
 }
 
+/* ✅ 기본 바디 스타일 */
 body {
   background: var(--background);
   color: var(--foreground);
@@ -34,16 +39,7 @@ body {
   animation: fadeIn 0.4s ease-out forwards;
 }
 
-@keyframes toastInOut {
-  0%   { opacity: 0; transform: translateY(-6px); }
-  10%  { opacity: 1; transform: translateY(0); }
-  90%  { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-6px); }
-}
-.animate-toast {
-  animation: toastInOut 3s ease forwards;
-}
-
+/* ✅ 토스트 애니메이션 */
 @keyframes toastInOut {
   0% {
     opacity: 0;
