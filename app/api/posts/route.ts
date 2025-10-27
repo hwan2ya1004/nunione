@@ -1,20 +1,24 @@
 import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth"; // 🔹 경로는 실제 프로젝트 구조에 맞게 조정
 
 // ✅ 글 목록 불러오기 (GET)
 export async function GET() {
   try {
+    // 🔹 로그인 세션 확인
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
+    }
+
     const client = await clientPromise;
     const db = client.db("nuni");
 
-    // (미래용) 로그인 세션별 개인글 필터링 가능
-    // const session = await getServerSession(authOptions);
-    // const userId = session?.user?.email;
-    // const posts = await db.collection("posts").find({ userId }).sort({ createdAt: -1 }).toArray();
-
+    // 🔹 로그인한 사용자 글만 불러오기
     const posts = await db
       .collection("posts")
-      .find()
+      .find({ userEmail: session.user.email })
       .sort({ createdAt: -1 })
       .toArray();
 
@@ -28,6 +32,12 @@ export async function GET() {
 // ✅ 글 저장하기 (POST)
 export async function POST(req: Request) {
   try {
+    // 🔹 세션 인증
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
+    }
+
     const body = await req.json();
     const client = await clientPromise;
     const db = client.db("nuni");
@@ -44,15 +54,16 @@ export async function POST(req: Request) {
 
     // ✅ 새 문서 구조
     const newPost = {
+      userEmail: session.user.email, // 🔹 로그인 사용자 이메일로 식별
+      userName: session.user.name || null, // 🔹 추가 (옵션)
       content: body.content || "",
       category: body.category || "안경렌즈",
-      store: body.store || null, // ✅ 추가된 부분 (상호명 + 주소)
-      visibility: body.visibility || "private", // 개인 전용
-      remindMonths, // 0 | 3 | 6 | 9 | 12
-      nextRemindAt, // Date | null
-      image: body.image || null, // ✅ base64 이미지 1장 저장
+      store: body.store || null,
+      visibility: body.visibility || "private",
+      remindMonths,
+      nextRemindAt,
+      image: body.image || null,
       createdAt: now,
-      // userId: session?.user?.email || null, // (로그인 연동 시)
     };
 
     // ✅ MongoDB에 저장
@@ -62,7 +73,7 @@ export async function POST(req: Request) {
     const savedPost = { _id: result.insertedId, ...newPost };
 
     return NextResponse.json({
-      message: "✅ 글 저장 성공",
+      message: "✅ MongoDB에 글 저장 성공",
       post: savedPost,
     });
   } catch (error) {

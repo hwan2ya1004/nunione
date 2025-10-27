@@ -14,7 +14,6 @@ export default function LoginPage() {
 
   if (loading) return <LoadingSpinner />;
 
-  // ✅ 타입 명시를 제거하고 JS처럼 처리 (TS 에러 완전 제거)
   const handleLogin = (provider) => {
     signIn(provider, { callbackUrl: "/" });
   };
@@ -22,36 +21,38 @@ export default function LoginPage() {
   return (
     <div
       style={{
-        height: "100vh",
+        height: "100vh", // ✅ padding 대신 높이 고정
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "flex-start", // ✅ 상단 정렬
         background:
           "linear-gradient(135deg, #e0f2fe 0%, #f9fafb 50%, #fff9c4 100%)",
         fontFamily: "Pretendard, sans-serif",
+        overflow: "hidden", // ✅ 스크롤 방지
       }}
     >
       <div
         style={{
           background: "white",
-          padding: "50px 40px",
+          padding: "45px 40px",
           borderRadius: "20px",
           boxShadow: "0 6px 30px rgba(0, 0, 0, 0.1)",
           width: "340px",
           textAlign: "center",
           animation: "fadeIn 0.6s ease-in-out",
+          marginTop: "80px", // ✅ 상단 여백을 padding 대신 여기서 줌
         }}
       >
         <img
-  src="/favicon.ico"
-  alt="Nu’ni 로고"
-  width={70}
-  height={70}
-  style={{
-    display: "block",
-    margin: "0 auto 20px auto",
-  }}
-/>
+          src="/favicon.ico"
+          alt="Nu’ni 로고"
+          width={70}
+          height={70}
+          style={{
+            display: "block",
+            margin: "0 auto 20px auto",
+          }}
+        />
 
         <h2
           style={{

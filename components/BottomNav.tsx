@@ -4,9 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 
+// ✅ react-icons 추가
+import { FaHome } from "react-icons/fa";
+import { RiQuillPenLine } from "react-icons/ri";
+import { FaUserAlt, FaKey } from "react-icons/fa";
+
 export default function BottomNav() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
+
+  // ✅ /write, /login, /register 페이지에서는 네비게이션 숨김
+  const hideNavRoutes = ["/write"];
+  const shouldHide = hideNavRoutes.some((path) => pathname.startsWith(path));
+  if (shouldHide) return null;
 
   // ✅ 현재 페이지에 따라 아이콘 색상 변경
   const linkStyle = (path: string) =>
@@ -46,7 +56,7 @@ export default function BottomNav() {
     >
       {/* 🏠 홈 */}
       <Link href="/" className={linkStyle("/")}>
-        <span className="text-lg">🏠</span>
+        <FaHome size={22} />
         <small className="text-[11px] mt-1">홈</small>
       </Link>
 
@@ -59,19 +69,19 @@ export default function BottomNav() {
                      hover:scale-105 transition-transform duration-200"
           aria-label="글쓰기"
         >
-          ＋
+          <RiQuillPenLine size={26} />
         </Link>
       </div>
 
       {/* 👤 마이페이지 or 로그인 */}
       {session ? (
         <Link href="/mypage" className={linkStyle("/mypage")}>
-          <span className="text-lg">👤</span>
+          <FaUserAlt size={22} />
           <small className="text-[11px] mt-1">마이페이지</small>
         </Link>
       ) : (
         <Link href="/login" className={linkStyle("/login")}>
-          <span className="text-lg">🔑</span>
+          <FaKey size={22} />
           <small className="text-[11px] mt-1">로그인</small>
         </Link>
       )}
