@@ -1,7 +1,17 @@
+# ✅ Netlify 설정 (Next.js 15 + NextAuth 완벽 대응)
+
 [build]
-  command = "npm run build"
-  publish = ".next"
+  command   = "npm run build"
+  publish   = ".next"
   functions = "netlify/functions"
+
+[functions]
+  node_bundler   = "esbuild"       # ✅ Next.js 15 app/api 라우트 누락 방지
+  included_files = ["public/**"]   # 정적 리소스 포함
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "18"              # Netlify 런타임 Node 버전 강제
+  NPM_FLAGS    = "--legacy-peer-deps"
